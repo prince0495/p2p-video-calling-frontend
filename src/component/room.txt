@@ -1,0 +1,120 @@
+// import React, { useContext, useEffect, useRef, useState } from 'react'
+// import { PeerContext } from '../context/Peer'
+// import { SocketContext } from '../context/Socket'
+// import { useParams } from 'react-router-dom'
+
+// const Room = () => {
+//   const params = useParams()
+//   const roomName: string = params.id as string;
+  
+//   const peerConnection = useContext(PeerContext)
+//   const socketConnection = useContext(SocketContext)
+//   const localVideoRef = useRef<HTMLVideoElement>(null);
+//   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+//   const [localStream, setLocalStream] = useState<MediaStream | null>(null)
+//   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null)
+
+
+//   if(socketConnection === null) {
+//     alert('please refresh again...')
+//     return;
+//   }
+//   if(peerConnection === null) {
+//     alert('please wait and refresh again...')
+//     return;
+//   }
+//   const socket = socketConnection.socket;
+//   const pc = peerConnection.pc;
+
+//   useEffect(() => {
+//     console.log('effect run');
+//     pc.onnegotiationneeded = async() => {
+//       console.log('negotiating');
+      
+//       const offer = await pc.createOffer();
+//       await pc.setLocalDescription(offer);
+//       console.log('offer sent to other side');
+      
+//       socket.emit('createOffer', {roomName: roomName, sdp: offer})
+//     }
+
+//     pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+//       if(event.candidate) {
+//         console.log('sending ice candidates to other side');
+        
+//         socket.emit('iceCandidateExchange', {roomName: roomName, candidate: event.candidate})
+//       }
+//     }
+//     async function startLocalVideoStream () {
+//       const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true})
+//       setLocalStream(stream)
+//       if(localVideoRef.current) {
+//         localVideoRef.current.srcObject = new MediaStream(stream.getVideoTracks());
+//       }
+      
+//       stream.getTracks().forEach(track => {
+//         pc.addTrack(track, stream)
+//       })
+      
+//     }
+//     startLocalVideoStream()
+//     const remoteMediaStream = new MediaStream();
+//     setRemoteStream(remoteMediaStream)
+    
+//     pc.ontrack = (event: RTCTrackEvent) => {
+//       event.streams[0].getTracks().forEach(track => {
+//         remoteMediaStream.addTrack(track)
+//       })
+//       if(remoteVideoRef.current) {
+//         remoteVideoRef.current.srcObject = remoteMediaStream;
+//       }
+//     }
+    
+//     socket.on('newUserJoined', () => {
+//       console.log('new user joined');
+      
+//       // initiateVideoCall()
+//     })
+//     socket.on('createOffer', async(obj) => {
+//       const roomName = obj.roomName;
+//       const sdp = obj.sdp;
+//       await pc.setRemoteDescription(sdp)
+//       const answer = await pc.createAnswer();
+//       await pc.setLocalDescription(answer)
+//       console.log('receved offer and sent answer');
+      
+//       socket.emit('createAnswer', {roomName: roomName, sdp: answer})
+//       pc.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+//         if(event.candidate) {
+//           console.log('sent ice candidates 2 ');
+          
+//           socket.emit('iceCandidateExchange', {roomName: roomName, candidate: event.candidate})
+//         }
+//       }
+//     })
+//     socket.on('createAnswer', async(obj) => {
+//       const sdp = obj.sdp;
+//       console.log('offer get accpeted');
+//       await pc.setRemoteDescription(sdp)
+//     })
+//     socket.on('iceCandidateExchange', async(obj) => {
+//       console.log('ICE candidates received and saved');
+      
+//       await pc.addIceCandidate(obj.candidate)
+//     })
+//   }, [])
+
+//   return (
+//     <div className='w-full h-full'>
+//       <div className=''>
+//         <video ref={localVideoRef} autoPlay muted playsInline className=''></video>
+//       </div>
+//       <div>
+//         <video ref={remoteVideoRef} autoPlay playsInline></video>
+//       </div>
+//     </div>
+//   )
+// }
+
+// export default Room
