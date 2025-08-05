@@ -22,7 +22,6 @@ const Home = () => {
   }
 
   const socket = socketConnection.socket;
-  const pc = peerConnection.pc;
   const reset = peerConnection.reset;
 
   type Room = {
@@ -68,7 +67,7 @@ const getRooms = async () => {
     reset();
     socket.emit('joinRoom', roomName);
     if(!isPrivate) {
-      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/room/create`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/room/create`, {
         roomName
       });
     }
