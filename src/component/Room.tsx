@@ -92,6 +92,7 @@ const Room = () => {
     });
 
     socket.on('userLeft', () => {
+      console.log('user left');
       setRemoteConnected(false);
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = null;
